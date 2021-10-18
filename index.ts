@@ -1,27 +1,64 @@
-import express from "express";
-import path from "path";
-import address from "address";
+import { createServer } from "http";
 
-const port = 3000;
+import { config } from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import { Server } from "socket.io";
+
+import { router } from "./src/routes";
+import { printToConsole } from "./src/utils/helpers";
+import { debug } from "console";
+import bcrypt from "bcrypt";
+
+config();
+
+// import { createDiffieHellman, generatePrimeSync } from "crypto";
+
+const PORT = process.env.PORT ?? 3001;
+const MONGOURL = process.env.DB_URL ?? "";
+
 const app = express();
-app.use(express.urlencoded({ extended: true }));
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: "*",
+  },
+});
+
+io.on("connection", (socket) => {
+  console.log("a user connected");
+
+  socket.on("messageSent", (value) => {
+    console.log(value);
+    socket.broadcast.emit("message", value);
+  });
+
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+});
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "./src/index.html"));
+  return res.send("Hello");
 });
+app.use(router);
 
-app.post("/form", (req, res) => {
-  console.log(req.body);
-  return res.sendFile(path.join(__dirname, "./src/index.html"));
+mongoose
+  .connect(MONGOURL)
+  .then((res) => {
+    httpServer.listen(PORT, () => {
+      if (process.env.NODE_ENV !== "production") printToConsole(PORT);
+    });
+  })
+  .catch((err) => {
+    console.log("Could not connect to mongodb");
+  });
+
+process.on("SIGTERM", () => {
+  debug("SIGTERM signal received: closing HTTP server");
+  httpServer.close(() => {
+    debug("HTTP server closed");
+  });
 });
-
-app.listen(port, () => {
-  if (process.env.NODE_ENV === "production") return;
-  printToConsole(port);
-});
-
-const printToConsole = (port: number) => {
-  console.log(`Listening at port ${port}`);
-  console.log(address.ip());
-};
