@@ -1,11 +1,7 @@
 import { RequestHandler } from "express";
 import { validationResult } from "express-validator";
 import bcrypt from "bcrypt";
-import jwt, {
-  JsonWebTokenError,
-  JwtPayload,
-  TokenExpiredError,
-} from "jsonwebtoken";
+import jwt, { JwtPayload, TokenExpiredError } from "jsonwebtoken";
 
 import User from "../models/User";
 
@@ -14,13 +10,22 @@ export const login: RequestHandler = async (req, res) => {
   if (!errors.isEmpty()) {
     return res.status(400).json({ errors: errors.array() });
   }
-  const user = await User.findOne({ email: req.body.email });
-  if (!user) return res.status(400).send("User does not exist");
-  const isValid = await bcrypt.compare(req.body.password, user.password);
-  if (isValid) {
-    return res.status(200).json(generateTokens({ email: user.email }));
+  try {
+    const user = await User.findOne({ email: req.body.email });
+    if (!user) return res.status(400).send("User does not exist");
+    const isValid = await bcrypt.compare(req.body.password, user.password);
+    if (isValid) {
+      const userJson = {
+        _id: user._id,
+        email: user.email,
+      };
+      return res.status(200).json(generateTokens(userJson));
+    }
+    return res.status(400).send("Username/password invalid");
+  } catch (e) {
+    console.log(e);
   }
-  return res.status(400).send("Username/password invalid");
+  return res.sendStatus(400);
 };
 
 export const signup: RequestHandler = async (req, res) => {
@@ -33,8 +38,12 @@ export const signup: RequestHandler = async (req, res) => {
     const user = new User(req.body);
     user.password = await bcrypt.hash(user.password, 10);
     await user.save();
+    const userJson = {
+      _id: user._id,
+      email: user.email,
+    };
 
-    return res.status(201).json(generateTokens({ email: user.email }));
+    return res.status(201).json(generateTokens(userJson));
   } catch (e) {}
   return res.status(400).json({ message: "An error occured" });
 };
@@ -61,14 +70,14 @@ export const refreshToken: RequestHandler = async (req, res) => {
 
 const generateTokens = (payload: { [key: string]: any }) => {
   const access_token = jwt.sign(
-    { ...payload, type: "ACCESS_TOKEN" },
+    { user: payload, type: "ACCESS_TOKEN" },
     process.env.SECURE_KEY!,
     {
       expiresIn: "15m",
     }
   );
   const refresh_token = jwt.sign(
-    { ...payload, type: "REFRESH_TOKEN" },
+    { user: payload, type: "REFRESH_TOKEN" },
     process.env.SECURE_KEY!,
     {
       expiresIn: "10d",
