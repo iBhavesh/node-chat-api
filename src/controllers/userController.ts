@@ -1,5 +1,6 @@
 import { compare, hash } from "bcrypt";
 import { RequestHandler } from "express";
+import { createReadStream } from "fs";
 import { rm } from "fs/promises";
 import User, { UserDocument } from "../models/User";
 
@@ -8,7 +9,9 @@ export const getUser: RequestHandler = async (req, res) => {
     const user = await User.findOne({ email: req.params.email });
     if (!user) return res.status(400).send("user does not exist");
     return res.send(user);
-  } catch (error) {}
+  } catch (error) {
+    return res.sendStatus(400);
+  }
 };
 
 export const updateName: RequestHandler = async (req, res) => {
@@ -23,6 +26,20 @@ export const updateName: RequestHandler = async (req, res) => {
     console.log(e);
   }
   return res.sendStatus(400);
+};
+
+export const getProfilePicture: RequestHandler = async (req, res) => {
+  try {
+    const user = await User.findOne({
+      email: (req.user as UserDocument).email,
+    });
+    if (!user) return res.status(400).send("User does not exist");
+    if (!user.profilePicture) return res.sendStatus(400);
+    const file = createReadStream(user.profilePicture);
+    file.pipe(res);
+  } catch (error) {
+    return res.sendStatus(400);
+  }
 };
 
 export const updateProfilePicture: RequestHandler = async (req, res) => {

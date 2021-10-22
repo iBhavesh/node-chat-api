@@ -12,7 +12,7 @@ passport.use(
     },
     async (token, done) => {
       try {
-        if (token.type === "ACCESS_TOKEN") throw new Error("Invalid JWT");
+        if (token.type !== "ACCESS_TOKEN") throw new Error("Invalid JWT");
         return done(null, token.user);
       } catch (error) {
         return done(error);
@@ -29,7 +29,7 @@ passport.use(
     },
     async (token, done) => {
       try {
-        if (token.type === "MEDIA_TOKEN") throw new Error("Invalid JWT");
+        if (token.type !== "MEDIA_TOKEN") throw new Error("Invalid JWT");
         return done(null, token.user);
       } catch (error) {
         return done(error);

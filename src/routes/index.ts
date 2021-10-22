@@ -20,11 +20,7 @@ export const router = Router();
 
 router.use("/auth", authRouter);
 
-router.use(
-  "/media",
-  passport.authenticate("media", { session: false }),
-  mediaRouter
-);
+router.use("/media", mediaRouter);
 
 router.use(passport.authenticate("jwt", { session: false }));
 

@@ -39,3 +39,14 @@ export const loginValidator = [
     .withMessage("Password is required")
     .isLength({ min: 6 }),
 ];
+
+export const updatePasswordValidator = [
+  body("old-password")
+    .isEmpty()
+    .withMessage("Old password is required")
+    .isLength({ min: 6 }),
+  body("new-password")
+    .isEmpty()
+    .withMessage("New password is required")
+    .isLength({ min: 6 }),
+];
