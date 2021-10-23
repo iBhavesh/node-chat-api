@@ -7,9 +7,11 @@ import "../utils/auth";
 export const mediaRouter = Router();
 
 mediaRouter.get(
-  "token",
+  "/token",
   Passport.authenticate("jwt", { session: false }),
   MediaController.getMediaToken
 );
 
-mediaRouter.use(Passport.authenticate("media"));
+mediaRouter.use(Passport.authenticate("media", { session: false }));
+
+mediaRouter.get("/profile-picture/:userId", MediaController.getProfilePicture);

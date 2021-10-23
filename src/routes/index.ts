@@ -4,6 +4,7 @@ import passport from "passport";
 import { authRouter } from "./authRouter";
 import { userRouter } from "./userRouter";
 import { mediaRouter } from "./mediaRouter";
+import { chatRouter } from "./chatRouter";
 
 import "../utils/auth";
 import { createGzip, createUnzip } from "zlib";
@@ -25,6 +26,7 @@ router.use("/media", mediaRouter);
 router.use(passport.authenticate("jwt", { session: false }));
 
 router.use("/user", userRouter);
+router.use("/chat", chatRouter);
 
 router.get("/file", async (req, res) => {
   const hash = createHash("sha256");

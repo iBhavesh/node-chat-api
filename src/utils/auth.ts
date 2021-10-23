@@ -20,11 +20,12 @@ passport.use(
     }
   )
 );
+
 passport.use(
   "media",
   new JWTStrategy(
     {
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromUrlQueryParameter("token"),
       secretOrKey: process.env.SECURE_KEY,
     },
     async (token, done) => {
