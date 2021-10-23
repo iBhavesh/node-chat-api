@@ -15,3 +15,4 @@ mediaRouter.get(
 mediaRouter.use(Passport.authenticate("media", { session: false }));
 
 mediaRouter.get("/profile-picture/:userId", MediaController.getProfilePicture);
+mediaRouter.get("/chat/:messageId", MediaController.getChatMedia);

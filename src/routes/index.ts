@@ -26,7 +26,7 @@ router.use("/media", mediaRouter);
 router.use(passport.authenticate("jwt", { session: false }));
 
 router.use("/user", userRouter);
-router.use("/chat", chatRouter);
+router.use(chatRouter);
 
 router.get("/file", async (req, res) => {
   const hash = createHash("sha256");

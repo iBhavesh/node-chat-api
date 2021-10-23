@@ -1,10 +1,16 @@
 import { RequestHandler } from "express";
+import { MessagePort } from "worker_threads";
 import Chat from "../models/Chat";
-import User from "../models/User";
+import User, { UserDocument } from "../models/User";
 
 export const addMessage: RequestHandler = async (req, res) => {
   try {
-    req.body.sender = (req.user as any)._id;
+    if (req.file) {
+      req.body.content = req.file.path;
+      req.body.isMedia = true;
+    }
+
+    req.body.sender = (req.user as UserDocument)._id;
     const receiver = await User.findOne({ email: req.body.receiver });
     req.body.receiver = receiver?._id;
     const chat = new Chat(req.body);
@@ -26,8 +32,8 @@ export const getMessages: RequestHandler = async (req, res) => {
     }
     const messages = await Chat.find({
       $or: [
-        { receiver: (req.user as any)._id, sender: user?._id },
-        { sender: (req.user as any)._id, receiver: user?._id },
+        { receiver: (req.user as UserDocument)._id, sender: user?._id },
+        { sender: (req.user as UserDocument)._id, receiver: user?._id },
       ],
       ...option,
     }).sort({ createdAt: -1 });
@@ -36,6 +42,7 @@ export const getMessages: RequestHandler = async (req, res) => {
     return res.sendStatus(400);
   }
 };
+
 export const getAllMessages: RequestHandler = async (req, res) => {
   try {
     let option: { [key: string]: any } = {};
@@ -44,13 +51,27 @@ export const getAllMessages: RequestHandler = async (req, res) => {
     }
     const messages = await Chat.find({
       $or: [
-        { receiver: (req.user as any)._id },
-        { sender: (req.user as any)._id },
+        { receiver: (req.user as UserDocument)._id },
+        { sender: (req.user as UserDocument)._id },
       ],
       ...option,
     }).sort({ createdAt: -1 });
     return res.send(messages);
   } catch (error) {
+    return res.sendStatus(400);
+  }
+};
+
+export const deliverMessage: RequestHandler = async (req, res) => {
+  try {
+    console.log(req.body);
+    const message = await Chat.findOne({ id: req.body._id });
+    if (!message) return res.status(400).send("Message does not exist");
+    message.isDelivered = true;
+    message.deliveredAt = new Date();
+    await message.save();
+    return res.sendStatus(200);
+  } catch (e) {
     return res.sendStatus(400);
   }
 };

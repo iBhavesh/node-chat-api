@@ -6,7 +6,7 @@ type Chat = {
   sender: ObjectId;
   receiver: ObjectId;
   createdAt: Date;
-  deliveredAt: Date;
+  deliveredAt: Date | null;
   isDelivered: boolean;
 };
 
@@ -41,6 +41,7 @@ const chatSchema = new Schema<Chat>({
   },
   deliveredAt: {
     type: Date,
+    default: null,
   },
   isDelivered: {
     type: Boolean,
