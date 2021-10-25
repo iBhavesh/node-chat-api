@@ -49,6 +49,8 @@ export const getChatMedia: RequestHandler = async (req, res) => {
     });
     if (!message) return res.status(400).send("Message does not exist");
     await stat(message.content);
+    message.deliveredAt = new Date();
+    await message.save();
     const file = createReadStream(message.content);
     file.pipe(res);
   } catch (error: any) {
