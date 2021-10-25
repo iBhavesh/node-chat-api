@@ -26,17 +26,23 @@ export const addMessage: RequestHandler = async (req, res) => {
 export const getMessages: RequestHandler = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.params.userId });
+    if (!user) return res.status(400).send("User does not exist");
     let option: { [key: string]: any } = {};
     if (req.query.isDelivered) {
       option.isDelivered = req.query.isDelivered;
     }
     const messages = await Chat.find({
       $or: [
-        { receiver: (req.user as UserDocument)._id, sender: user?._id },
-        { sender: (req.user as UserDocument)._id, receiver: user?._id },
+        { receiver: (req.user as UserDocument)._id, sender: user._id },
+        { sender: (req.user as UserDocument)._id, receiver: user._id },
       ],
       ...option,
     }).sort({ createdAt: -1 });
+    messages.forEach((message) => {
+      if (!message.deliveredAt || message.receiver === user.id) return;
+      message.deliveredAt = new Date();
+      message.save();
+    });
     return res.send(messages);
   } catch (error) {
     return res.sendStatus(400);
@@ -56,6 +62,15 @@ export const getAllMessages: RequestHandler = async (req, res) => {
       ],
       ...option,
     }).sort({ createdAt: -1 });
+    messages.forEach((message) => {
+      if (
+        !message.deliveredAt ||
+        message.receiver === (req.user as UserDocument)._id
+      )
+        return;
+      message.deliveredAt = new Date();
+      message.save();
+    });
     return res.send(messages);
   } catch (error) {
     return res.sendStatus(400);
