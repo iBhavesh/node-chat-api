@@ -26,6 +26,14 @@ export const signupValidator = [
     .bail()
     .isLength({ min: 6 })
     .withMessage("Password should be atleast 6 characters"),
+  body("name")
+    .bail()
+    .trim()
+    .notEmpty()
+    .withMessage("Name is required")
+    .bail()
+    .isLength({ min: 6 })
+    .withMessage("Name should be atleast 2 characters"),
 ];
 
 export const loginValidator = [

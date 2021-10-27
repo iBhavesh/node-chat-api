@@ -13,5 +13,4 @@ chatRouter.post(
 );
 chatRouter.get("/messages", ChatController.getAllMessages);
 chatRouter.get("/messages/:userId", ChatController.getMessages);
-chatRouter.get("/messages/:userId", ChatController.deliverMessage);
-chatRouter.patch("/message/deliver", ChatController.deliverMessage);
+chatRouter.put("/message/:messageId/deliver", ChatController.deliverMessage);

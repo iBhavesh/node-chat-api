@@ -7,10 +7,10 @@ import { updatePasswordValidator } from "../utils/validators";
 
 export const userRouter = Router();
 
-userRouter.patch("/name", UserController.updateName);
+userRouter.put("/name", UserController.updateName);
 userRouter
   .route("/profile-picture")
-  .get(UserController.getProfilePicture)
+  // .get(UserController.getProfilePicture)
   .post(
     multer({ storage: storage, fileFilter: imageFilter }).single("file"),
     UserController.updateProfilePicture

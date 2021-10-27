@@ -1,5 +1,4 @@
 import { RequestHandler } from "express";
-import { MessagePort } from "worker_threads";
 import Chat from "../models/Chat";
 import User, { UserDocument } from "../models/User";
 
@@ -79,8 +78,10 @@ export const getAllMessages: RequestHandler = async (req, res) => {
 
 export const deliverMessage: RequestHandler = async (req, res) => {
   try {
-    console.log(req.body);
-    const message = await Chat.findOne({ id: req.body._id });
+    const message = await Chat.findById(req.params.messageId);
+    if (!message) return res.status(400).send("Message Not Found");
+    if ((req.user as UserDocument)._id !== message.receiver)
+      return res.sendStatus(401);
     if (!message) return res.status(400).send("Message does not exist");
     message.isDelivered = true;
     message.deliveredAt = new Date();

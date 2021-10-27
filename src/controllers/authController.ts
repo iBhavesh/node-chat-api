@@ -13,7 +13,7 @@ export const login: RequestHandler = async (req, res) => {
   try {
     const user = await User.findOne({ email: req.body.email });
     if (!user) return res.status(400).send("User does not exist");
-    const isValid = await bcrypt.compare(req.body.password, user.password);
+    const isValid = await bcrypt.compare(req.body.password, user.password!);
     if (isValid) {
       const userJson = {
         _id: user._id,
@@ -36,7 +36,7 @@ export const signup: RequestHandler = async (req, res) => {
 
   try {
     const user = new User(req.body);
-    user.password = await bcrypt.hash(user.password, 10);
+    user.password = await bcrypt.hash(user.password!, 10);
     await user.save();
     const userJson = {
       _id: user._id,

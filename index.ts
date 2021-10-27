@@ -1,5 +1,6 @@
 import { config } from "dotenv";
 import express from "express";
+import { mkdir, stat } from "fs/promises";
 import mongoose from "mongoose";
 import passport from "passport";
 
@@ -32,6 +33,7 @@ mongoose
 
     init(server);
     socketCon();
+    createFolders();
 
     process.on("SIGTERM", () => {
       console.debug("SIGTERM signal received: closing HTTP server");
@@ -57,4 +59,12 @@ const socketCon = () => {
       console.log("user disconnected");
     });
   });
+};
+
+const createFolders = async () => {
+  try {
+    const dir = await stat("uploads");
+  } catch {
+    await mkdir("uploads");
+  }
 };
