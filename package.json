@@ -33,6 +33,7 @@
     "@types/passport": "^1.0.7",
     "@types/passport-jwt": "^3.0.6",
     "@types/passport-local": "^1.0.34",
+    "address": "^1.1.2",
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
@@ -49,7 +50,6 @@
   "devDependencies": {
     "@swc/core": "^1.2.102",
     "@swc/helpers": "^0.2.13",
-    "address": "^1.1.2",
     "nodemon": "^2.0.13",
     "regenerator-runtime": "^0.13.9",
     "ts-node": "^10.3.0"
