@@ -34,8 +34,6 @@
     "socket.io": "^4.3.0"
   },
   "devDependencies": {
-    "@swc/core": "^1.2.102",
-    "@swc/helpers": "^0.3.3",
     "@types/bcrypt": "^5.0.0",
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.5",
