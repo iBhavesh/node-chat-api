@@ -20,7 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(passport.initialize());
 
 app.get("/", (req, res) => {
-  return res.send("Hello");
+  return res.send("Hello world");
 });
 app.use(router);
 

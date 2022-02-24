@@ -1,0 +1,15 @@
+FROM node:17.6-alpine3.14 as BUILDER
+EXPOSE 3000
+WORKDIR /app
+ENV NODE_ENV=${NODE_ENV}
+COPY ./package.json ./yarn.lock* ./package-lock.json* ./
+RUN yarn install
+COPY . .
+RUN yarn build
+RUN yarn install --production
+
+FROM node:17.6-alpine3.14
+WORKDIR /app
+COPY --from=BUILDER /app/dist ./dist
+COPY --from=BUILDER /app/node_modules ./node_modules
+CMD ["node",".dist/index.js"]

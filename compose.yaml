@@ -1,0 +1,14 @@
+services:
+  api:
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      - PORT=${NODE_PORT:-3000}
+      - NODE_ENV=DEVELOPMENT
+    volumes:
+      - /app/node_modules
+      - .:/app
+    ports:
+      - "3000:${NODE_PORT:-3000}"
+    
