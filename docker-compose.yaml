@@ -1,0 +1,32 @@
+services:
+  db:
+    image: 'mongo:5'
+    container_name: mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+      - MONGO_INITDB_DATABASE=ping
+    ports:
+      - "27017:27017"
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    logging:
+      driver: none
+  api:
+    container_name: api
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
+    depends_on:
+      - db
+    environment:
+      - PORT=${NODE_PORT:-3000}
+      - NODE_ENV=DEVELOPMENT
+      - DB_URL=mongodb://pingUser:pingUser@db:27017/ping
+      - SECURE_KEY=${SECURE_KEY:-abcdefgh}
+    volumes:
+      - /app/node_modules
+      - .:/app
+    ports:
+      - "3000:${NODE_PORT:-3000}"
+    

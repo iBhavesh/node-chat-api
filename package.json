@@ -21,6 +21,8 @@
   },
   "homepage": "https://github.com/iBhavesh/node-chat-api#readme",
   "dependencies": {
+    "@swc/core": "^1.2.160",
+    "@swc/helpers": "^0.3.8",
     "bcrypt": "^5.0.1",
     "dotenv": "^16.0.0",
     "express": "^4.17.1",
