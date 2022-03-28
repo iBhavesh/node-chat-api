@@ -20,13 +20,14 @@ services:
     depends_on:
       - db
     environment:
-      - PORT=${NODE_PORT:-3000}
+      - PORT=${NODE_PORT:-4000}
       - NODE_ENV=DEVELOPMENT
       - DB_URL=mongodb://pingUser:pingUser@db:27017/ping
       - SECURE_KEY=${SECURE_KEY:-abcdefgh}
     volumes:
       - /app/node_modules
+      - /app/node_modules/
       - .:/app
     ports:
-      - "3000:${NODE_PORT:-3000}"
+      - "4000:${NODE_PORT:-4000}"
     

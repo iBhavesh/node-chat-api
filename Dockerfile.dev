@@ -1,12 +1,18 @@
-FROM node:17.7-alpine3.14 as BUILDER
-EXPOSE 3000
+FROM node:17.8-alpine3.14 as BUILDER
+EXPOSE ${NODE_ENV}
 WORKDIR /app
 ENV NODE_ENV=${NODE_ENV}
 COPY ./package.json ./yarn.lock* ./package-lock.json* ./
 RUN yarn install
-COPY . .
 
-FROM node:17.7-alpine3.14
+FROM node:17.8-alpine3.14
 WORKDIR /app
-COPY --from=BUILDER /app ./
+RUN apk update
+RUN apk add git
+RUN apk add --no-cache fish 
+RUN apk add gnupg
+RUN rm -rf /tmp/* /etc/apk/cache/*
+SHELL [ "/usr/bin/fish" ]
+COPY --from=BUILDER /app/node_modules ./node_modules
+COPY . .
 CMD ["yarn","dev"]
