@@ -32,7 +32,7 @@ const uploadFile = (req, filePath) => {
   // Drain is fired whenever a data chunk is written.
   // When that happens, print how much data has been written yet.
   stream.on('drain', () => {
-   const written = parseInt(stream.bytesWritten);
+   const written = stream.bytesWritten
    const total = parseInt(req.headers['content-length']);
    const pWritten = ((written / total) * 100).toFixed(2);
    console.log(`Processing  ...  ${pWritten}% done`);
